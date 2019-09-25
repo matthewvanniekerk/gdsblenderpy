@@ -1,12 +1,13 @@
 '''
 Project purpose is to import a gds and export a blender file.
 
-This borrows heavily from PHIDL (https://github.com/amccaugh/phidl)
-and from gdspy (https://github.com/heitzmann/gdspy/)
+This project depends heavily on:
+
+PHIDL (https://github.com/amccaugh/phidl)
+gdspy (https://github.com/heitzmann/gdspy/)
 
 It is not intended as an individualistic feat, but more as a synthesis of simple
 methods to create nice pictures. 
-
 
 Author:
 Matthew van Niekerk
