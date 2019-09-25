@@ -1,6 +1,23 @@
+'''
+Project purpose is to import a gds and export a blender file.
+
+This borrows heavily from PHIDL (https://github.com/amccaugh/phidl)
+and from gdspy (https://github.com/heitzmann/gdspy/)
+
+It is not intended as an individualistic feat, but more as a synthesis of simple
+methods to create nice pictures. 
+
+
+Author:
+Matthew van Niekerk
+'''
 import numpy as np
 
-import bpy
+try:
+    import bpy
+except:
+    print('You must run this file from the Blender build of python to ustilize interop with Blender.')
+
 
 import matplotlib.pyplot as plt
 import phidl.geometry as pg
@@ -17,11 +34,12 @@ import os
 import sys
 import warnings
 
-for item in bpy.data.meshes:
-    bpy.data.meshes.remove(item)
-  
-location = '/users/matthewvanniekerk/documents/rit/group/gds_extrude/test.gds'
 
+  
+'''
+Importer object takes a gds file as a constrcutoor
+
+'''
 class Importer(object):
     '''
     Parameters
@@ -29,10 +47,11 @@ class Importer(object):
     filename (string) - the filename of the gds file
     layerstack (LayerStack) - Layer Stack for this gds
     '''
-    def __init__(self, filename, layerstack):
+    def __init__(self, filename, layerstack, cellname = None):
 
         self.filename = filename
-        self.gds = self._import_gds(self.filename)
+        self.cellname = cellname
+        self.gds = self._import_gds()
         self.layerstack = layerstack
         self.vertices = self._extract_vertices()
 
@@ -50,25 +69,24 @@ class Importer(object):
     -------
     Import any gds file and select the largest top cell as the top cell.
     '''
-    def _import_gds(self,filename):
+    def _import_gds(self):
         gdsii_lib = gdspy.GdsLibrary()
-        gdsii_lib.read_gds(filename)
+        gdsii_lib.read_gds(self.filename)
         top_level_cells = gdsii_lib.top_level()
-        '''
+        cellname = self.cellname 
         if cellname is not None:
             if cellname not in gdsii_lib.cell_dict:
-                raise ValueError('[PHIDL] import_gds() The requested cell (named %s) is not present in file %s' % (cellname,filename))
+                raise ValueError('The requested cell (named %s) is not present in file %s' % (cellname,self.filename))
             topcell = gdsii_lib.cell_dict[cellname]
         elif cellname is None and len(top_level_cells) == 1:
             topcell = top_level_cells[0]
         elif cellname is None and len(top_level_cells) > 1:
-            raise ValueError('[PHIDL] import_gds() There are multiple top-level cells, you must specify `cellname` to select of one of them')
-        '''
-        areas = []
-        for cell in top_level_cells:
-            areas.append(cell.area())
-        ind = areas.index(max(areas))
-        topcell = top_level_cells[ind]
+            areas = []
+            for cell in top_level_cells:
+                areas.append(cell.area())
+            ind = areas.index(max(areas))
+            topcell = top_level_cells[ind]
+            
 
         D = Device('import_gds')
         polygons = topcell.get_polygons(by_spec = True)
@@ -111,6 +129,9 @@ class Importer(object):
         return vertices
     
     def draw_in_blender(self):
+        # Delete all meshes in the scene
+        for item in bpy.data.meshes:
+            bpy.data.meshes.remove(item)
         vertices = self.vertices
         layer_stack = self.layerstack
         for layer in layer_stack.layers:
@@ -170,15 +191,15 @@ class Layer(object):
     thickness (float) - layer thickness extending from z to final height
     color (float) - (r , g, b, alpha)
     '''
-    def __init__(self, name, layer, datatype, z, thickness, color, etch = False ):
+    def __init__(self, name, layer, datatype, z, thickness, color, alpha, etch_target = None ):
         
         self.name = name
         self.layer = layer
         self.datatype = datatype
         self.z = z
         self.thickness = thickness
-        self.etch = etch
-        self.color = color
+        self.etch_target = etch_target
+        self.color = (color[0]/255,color[1]/255,color[2]/255,alpha)
     
         
 class LayerStack(object):
@@ -188,21 +209,16 @@ class LayerStack(object):
 
     layers (list) - list of layers 
     '''
-    def __init__(self,layers):
-
+    def __init__(self,name,layers):
+        self.name = name
         self.layers = layers
-
-        # TODO: Organize the starting positions... i.e. if there is overlap, then add amount to the spacing in between. 
 
     def plot(self):
 
         for lay in self.layers:
-            if lay.etch:
-                plt.fill([0 , 0 , 0.5, 0.5],[lay.z,lay.z+lay.thickness, lay.z+lay.thickness, lay.z], 'w', label = lay.name , alpha = 0.3, edgecolor = (lay.color[0],lay.color[1],lay.color[2]), lw = 1)
-            else:
-                plt.fill([0 , 0 , 1, 1],[lay.z,lay.z+lay.thickness, lay.z+lay.thickness, lay.z], label = lay.name, alpha = 0.3,  color = (lay.color[0],lay.color[1],lay.color[2]), lw = 0)
+            plt.fill([0 , 0 , 1, 1],[lay.z,lay.z+lay.thickness, lay.z+lay.thickness, lay.z], label = lay.name, alpha = 0.3,  color = (lay.color[0],lay.color[1],lay.color[2]), lw = 0)
                 
-        plt.title('Layer Stack')
+        plt.title(self.name)
         plt.grid(False)
         plt.xlabel('')
         plt.tick_params(
@@ -222,9 +238,3 @@ class LayerStack(object):
         return 0,0, None
 
 
-
-'''
-#E = pg.import_gds(filename = location, flatten = True)
-vertices = extract_vertices(E) 
-draw_in_blender(vertices, ls)
-'''
