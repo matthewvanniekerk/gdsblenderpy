@@ -2,7 +2,7 @@
 import os
 import sys
 
-# add the path so that tortoise may be imported
+# add the path so that module may be imported from within blender python env
 
 path = os.path.dirname((os.path.dirname(os.path.realpath(__file__)))) + '/'
 sys.path.append(path)

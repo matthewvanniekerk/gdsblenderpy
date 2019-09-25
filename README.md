@@ -8,7 +8,7 @@ GDSPy
 NumPy
 
 # Running Translator
-'blender filename.blend --python layerstack-file.py'
+`blender filename.blend --python layerstack-file.py`
 Where the layerstack-file.py file has been created following instructions.
 See example
 

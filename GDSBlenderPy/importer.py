@@ -188,7 +188,7 @@ class Importer(object):
                     for slot in obj.material_slots:
                         #print(str(slot.material))
                         if slot.material == bpy.data.materials.get(name):
-                            
+                            # TODO Subtraction!!
                             #print('found!')
                             obj.select_set(state=True)
                             
