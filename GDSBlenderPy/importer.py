@@ -177,9 +177,23 @@ class Importer(object):
                     TRANSFORM_OT_translate={"value":(0, 0, extrude[i] )}
                 )
                 bpy.ops.object.editmode_toggle()
-                
-                
+        
                 new_object.data.materials.append(bpy.data.materials.get(lname[i]))
+        
+        for lay in self.layerstack.etch_targets:
+            name = lay.name
+            objects = bpy.data.objects
+            for obj in objects:
+                if obj.type == 'MESH':
+                    for slot in obj.material_slots:
+                        #print(str(slot.material))
+                        if slot.material == bpy.data.materials.get(name):
+                            
+                            #print('found!')
+                            obj.select_set(state=True)
+                            
+
+
 
 class Layer(object):
     '''
@@ -200,7 +214,7 @@ class Layer(object):
         self.thickness = thickness
         self.etch_target = etch_target
         self.color = (color[0]/255,color[1]/255,color[2]/255,alpha)
-    
+
         
 class LayerStack(object):
     '''
@@ -212,6 +226,10 @@ class LayerStack(object):
     def __init__(self,name,layers):
         self.name = name
         self.layers = layers
+        self.etch_targets = []
+        for lay in self.layers:
+            if lay.etch_target is not None:
+                self.etch_targets.append(lay.etch_target)
 
     def plot(self):
 
