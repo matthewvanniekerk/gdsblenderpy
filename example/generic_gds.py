@@ -8,7 +8,7 @@ path = os.path.dirname((os.path.dirname(os.path.realpath(__file__)))) + '/'
 sys.path.append(path)
 from GDSBlenderPy import *
 
-file_location = '/Users/matthewvanniekerk/desktop/gds-blender-test.GDS'
+file_location = os.getcd() + '/gds-blender-test.GDS'
 
 # From http://phrogz.net/css/distinct-colors.html
 colors = [
