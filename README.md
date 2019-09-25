@@ -4,10 +4,12 @@ Translate GDS to Blender files
 
 # Dependencies
 
-    +Phidl (https://github.com/amccaugh/phidl)
-    +GDSPy (https://github.com/heitzmann/gdspy/)
-    +NumPy
-    +MatplotLib
++ [Phidl](https://github.com/amccaugh/phidl)
++ [GDSPy](https://github.com/heitzmann/gdspy/)
++ NumPy
++ MatplotLib
+
+While not an explicit dependency, [KLayout](https://klayout.de) is a fantastic open source tool for viewing and creating GDS files.
 
 # Installation
 1. First `cd` into your blender path:
@@ -30,7 +32,7 @@ Translate GDS to Blender files
 
 5. Run setup.py for this project after downloading from git (untested)
 
-    ALTERNATIVELY (TODO)
+## ALTERNATIVELY (TODO)
 
 4. Install this module:
 
@@ -45,16 +47,15 @@ TODO Add instrcutions...
 Where the layerstack-file.py file has been created following instructions.
 See example
 
+# TODO
+## Use
 
-# TODO:
-## Use:
++ Neaten plotting of cross section 
 
-+Neaten plotting of cross section 
++ Boolean subtract for etch targets
 
-+Boolean subtract for etch targets
-
-## Function:
-+[Easier execution](https://blender.stackexchange.com/questions/6817/how-to-pass-command-line-arguments-to-a-blender-python-script)
+## Function
++ [Easier execution](https://blender.stackexchange.com/questions/6817/how-to-pass-command-line-arguments-to-a-blender-python-script)
 
 
 

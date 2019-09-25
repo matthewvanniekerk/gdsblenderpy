@@ -13,8 +13,7 @@ file_location = path + 'example/gds-blender-test.GDS'
 # From http://phrogz.net/css/distinct-colors.html
 colors = [
     (0,0,255),
-    (191,102,0
-    ),
+    (191,102,0),
     (76,51,0),
     (48,86,191),
     (246,255,128),  
