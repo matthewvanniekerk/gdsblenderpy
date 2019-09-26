@@ -181,49 +181,66 @@ class Importer(object):
         
                 new_object.data.materials.append(bpy.data.materials.get(lname[i]))
         
-        
-            
-        objects = bpy.data.objects
-        etch_targets = []
-        etch_layers = []
-        for obj in objects:
-            for lay in self.layerstack.etch_targets:
-                name = lay.name
-                if obj.type == 'MESH':
-                    for slot in obj.material_slots:
-                        #print(str(slot.material))
-                        if slot.material == bpy.data.materials.get(name):
-                            # TODO Subtraction!!
-                            #print('found!')
-                            #obj.select_set(state=True)
-                            etch_targets.append(obj)
-            for lay in self.layerstack.etch_layers:
-                name = lay
-                if obj.type == 'MESH':
-                    for slot in obj.material_slots:
-                        #print(str(slot.material))
-                        if slot.material == bpy.data.materials.get(name):
-                            # TODO Subtraction!!
-                            #print('found!')
-                            #obj.select_set(state=True)
-                            etch_layers.append(obj)
-        i = 0
-        for target in etch_targets:
-            for layer in etch_layers:
-                subtract = target.modifiers.new(type = 'BOOLEAN',name='bool' + str(i))
-                i = i + 1
-                subtract.object = layer
-                subtract.operation = 'DIFFERENCE'
-                #bpy.ops.object.modifier_apply( modifier = subtract.name)
-                layer.hide_set(True)
-        for target in etch_targets:
-            bpy.context.view_layer.objects.active = target 
-            print(target)
-            for mod in target.modifiers:
-                print(mod.name)
-                bpy.ops.object.modifier_apply( modifier = mod.name )
+        context = bpy.context
+        scene = context.scene
+        for layer in lname:
+            mats = [m.name for m in bpy.data.materials if m.name== layer]
+            for mat in mats:
+                obs = [o for o in scene.objects
+                        if o.type == 'MESH'
+                        and mat in o.material_slots]
 
-                      
+                if len(obs) > 1:
+                    # clear prior selection
+                    for o in context.selected_objects:
+                        o.select_set(False)
+                    for o in obs:
+                        o.select_set(True)
+                    context.view_layer.objects.active = obs[0]
+                    bpy.ops.object.join()
+        
+        
+          
+        # objects = bpy.data.objects
+        # etch_targets = []
+        # etch_layers = []
+        # for obj in objects:
+        #     for lay in self.layerstack.etch_targets:
+        #         name = lay
+        #         if obj.type == 'MESH':
+        #             for slot in obj.material_slots:
+        #                 #print(str(slot.material))
+        #                 if slot.material == bpy.data.materials.get(name):
+        #                     # TODO Subtraction!!
+        #                     #print('found!')
+        #                     #obj.select_set(state=True)
+        #                     etch_targets.append(obj)
+        #     for lay in self.layerstack.etch_layers:
+        #         name = lay
+        #         if obj.type == 'MESH':
+        #             for slot in obj.material_slots:
+        #                 #print(str(slot.material))
+        #                 if slot.material == bpy.data.materials.get(name):
+        #                     # TODO Subtraction!!
+        #                     #print('found!')
+        #                     #obj.select_set(state=True)
+        #                     etch_layers.append(obj)
+        # i = 0
+        # for target in etch_targets:
+        #     for layer in etch_layers:
+        #         subtract = target.modifiers.new(type = 'BOOLEAN',name='bool' + str(i))
+        #         i = i + 1
+        #         subtract.object = layer
+        #         subtract.operation = 'DIFFERENCE'
+        #         #bpy.ops.object.modifier_apply( modifier = subtract.name)
+        #         layer.hide_set(True)
+        # for target in etch_targets:
+        #     bpy.context.view_layer.objects.active = target 
+        #     #print(target)
+        #     for mod in target.modifiers:
+        #         # print(mod.name)
+        #         bpy.ops.object.modifier_apply( modifier = mod.name )
+                     
 
 
 
@@ -262,7 +279,7 @@ class LayerStack(object):
         self.etch_layers = []
         for lay in self.layers:
             if lay.etch_target is not None:
-                self.etch_targets.append(lay.etch_target)
+                self.etch_targets.append(lay.etch_target.name)
                 self.etch_layers.append(lay.name)
 
     def plot(self):

@@ -30,12 +30,13 @@ colors = [
     (166,0,133)
 ]
 
-layer1 = Layer('Layer 1', 1, 0, 0, 10, colors[0], 1 )
-layer2 = Layer('Layer 2', 2, 0, 2, 6, colors[1], 1 )
-layer3 = Layer('Layer 3', 3, 0, 6, 5, colors[2], 1, etch_target = layer2 )
+Si =     Layer('Silicon', 1, 0, 0,    0.22, colors[0], 1 )
+SiEtch = Layer('Si Etch', 20, 0, 0.11, 1, colors[1], 1, etch_target = Si )
+Via = Layer('Via',     11, 0, 0.22, 1, colors[2], 1 )
+Metal = Layer('Metal',   12, 0, 1.22, 2, colors[3], 1 )
 
-layerstack = LayerStack('Example', [layer1,layer2,layer3])
-layerstack.plot()
+layerstack = LayerStack('Simple Stack', [Si, SiEtch, Via, Metal])
+# layerstack.plot()
 imp = Importer(file_location,layerstack)
 imp.draw_in_blender()
 
