@@ -6,7 +6,7 @@ import sys
 
 path = os.path.dirname((os.path.dirname(os.path.realpath(__file__)))) + '/'
 sys.path.append(path)
-from GDSBlenderPy import *
+from GDSBlenderPy import Layer , LayerStack , Importer
 
 file_location = path + 'example/gds-blender-test.GDS'
 
@@ -30,9 +30,9 @@ colors = [
     (166,0,133)
 ]
 
-layer1 = Layer('Layer 1', 1, 0, 0, 0.5, colors[0], 1 )
-layer2 = Layer('Layer 2', 2, 0, 0.5, 0.5, colors[1], 1 )
-layer3 = Layer('Layer 3', 3, 0, 0.3, 0.2, colors[2], 1, etch_target = layer2 )
+layer1 = Layer('Layer 1', 1, 0, 0, 10, colors[0], 1 )
+layer2 = Layer('Layer 2', 2, 0, 2, 6, colors[1], 1 )
+layer3 = Layer('Layer 3', 3, 0, 6, 5, colors[2], 1, etch_target = layer2 )
 
 layerstack = LayerStack('Example', [layer1,layer2,layer3])
 layerstack.plot()
