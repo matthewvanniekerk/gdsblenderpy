@@ -68,7 +68,10 @@ These instructions help to install pip into the python that comes with blender, 
     `bin/pip3 install --target lib/python3.6   GDSBlenderPy`
 
 # Creating layer_stack file
-TODO Add instrcutions...
+
+See the example.
+
+In essence, add the layers you are interested in capturing for your blender project, give them, initial height (z), thickness, color and an etch_target if the layer is intended to cut into another layer (as opposed to being extruded).
 
 # Running Translator
 `blender filename.blend --python layerstack-file.py`
