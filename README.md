@@ -73,6 +73,10 @@ See the example.
 
 In essence, add the layers you are interested in capturing for your blender project, give them, initial height (z), thickness, color and an etch_target if the layer is intended to cut into another layer (as opposed to being extruded).
 
+At the end of the file (currently - will be changed in the future), add the layer stack and run the draw in blender command.
+
+Then when you run the translator like below, it should work as the example does.
+
 # Running Translator
 `blender filename.blend --python layerstack-file.py`
 
