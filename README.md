@@ -61,11 +61,11 @@ These instructions help to install pip into the python that comes with blender, 
 
 5. Run setup.py for this project after downloading from git (untested)
 
-## ALTERNATIVELY (TODO)
+## ALTERNATIVELY (WORKING)
 
 4. Install this module:
 
-    `bin/pip3 install --target lib/python3.6   GDSBlenderPy`
+    `bin/pip3 install --target lib/python3.6   gdsblenderpy
 
 # Creating layer_stack file
 
