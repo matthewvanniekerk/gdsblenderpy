@@ -81,7 +81,9 @@ See example
 
 + Neaten plotting of cross section 
 
-+ Boolean subtract for etch targets
++ Figure out way to do dopings?
+
++ Fix plot cross section
 
 ## Function
 + [Easier execution](https://blender.stackexchange.com/questions/6817/how-to-pass-command-line-arguments-to-a-blender-python-script)
