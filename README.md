@@ -1,4 +1,4 @@
-# gds-blender-py
+# gdsblenderpy
 
 Translate GDS to Blender files 
 
