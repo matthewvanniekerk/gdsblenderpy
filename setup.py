@@ -9,9 +9,9 @@ dependencies = [
         'phidl'
 ]
 setup(
-    name='gds-blender-py',
+    name='gdsblenderpy',
     version='0.0.1',
-    description='GDS to Blender',
+    description='GDS to Blender Python Translator',
     long_description=readme,
     long_description_content_type="text/markdown",
     author='Matthew van Niekerk',
