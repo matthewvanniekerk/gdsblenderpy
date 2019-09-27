@@ -30,10 +30,10 @@ colors = [
     (166,0,133)
 ]
 
-Si =     Layer('Silicon', 1, 0, 0,    0.22, colors[0], 1 )
+Si     = Layer('Silicon', 1, 0, 0,    0.22, colors[0], 1 )
 SiEtch = Layer('Si Etch', 20, 0, 0.11, 1, colors[1], 1, etch_target = Si )
-Via = Layer('Via',     11, 0, 0.22, 1, colors[2], 1 )
-Metal = Layer('Metal',   12, 0, 1.22, 2, colors[3], 1 )
+Via    = Layer('Via',     11, 0, 0.22, 1, colors[2], 1 )
+Metal  = Layer('Metal',   12, 0, 1.22, 2, colors[3], 1 )
 
 layerstack = LayerStack('Simple Stack', [Si, SiEtch, Via, Metal])
 # layerstack.plot()

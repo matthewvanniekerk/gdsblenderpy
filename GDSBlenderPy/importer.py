@@ -1,4 +1,7 @@
 '''
+TODO:
+-Comment the code nicely
+
 Project purpose is to import a gds and export a blender file.
 
 This project depends heavily on:
@@ -52,8 +55,9 @@ class Importer(object):
 
         self.filename = filename
         self.cellname = cellname
-        self.gds = self._import_gds()
         self.layerstack = layerstack
+        self.gds = self._import_gds()
+        self._etch_target_helper()
         self.vertices = self._extract_vertices()
 
 
@@ -88,15 +92,53 @@ class Importer(object):
             ind = areas.index(max(areas))
             topcell = top_level_cells[ind]
             
-
         D = Device('import_gds')
         polygons = topcell.get_polygons(by_spec = True)
 
         for layer_in_gds, polys in polygons.items():
             D.add_polygon(polys, layer = layer_in_gds)
         return D
-    
-    
+    '''
+    Remove the drawn etch layers 
+    '''
+    def _remove_etch_layers(self):
+        
+        for lay in self.layerstack.etch_layers:
+            self.gds.remove_layers(layers = (lay.layer,lay.datatype))
+
+    '''
+    Take the etch layer, boolean difference the two layers, and add 
+    that layer to the layer that was removed.
+    '''
+    def _etch_target_helper(self):
+
+        etch_layers = []
+        etch_targets = []
+        layer_target = []
+        for elay in self.layerstack.etch_layers:
+            etch_layers.append(self.gds.get_polygons(by_spec = True, depth = None)[(elay.layer,elay.datatype)])
+            layer_target.append((elay.layer,elay.datatype))
+        for etar in self.layerstack.etch_targets:
+            etch_targets.append(self.gds.get_polygons(by_spec = True, depth = None)[(etar.layer,etar.datatype)])
+            
+        # Do this with gdspy! dont go back to Device.
+
+        etch_layers,etch_targets
+        new_polygons = []
+        for i in range(len(etch_targets)):
+            p = gdspy.fast_boolean(operand1 = etch_targets[i], \
+                                operand2 = etch_layers[i], \
+                                operation = 'not', \
+                                precision = 1e-9, \
+                                max_points = 4000,\
+                                layer = layer_target[i][0],\
+                                datatype = layer_target[i][1] )
+            new_polygons.append(p)
+        self._remove_etch_layers()
+
+        for i in range(len(new_polygons)):
+            self.gds.add_polygon(new_polygons[i],layer = layer_target[i])
+
     def _extract_vertices(self):
 
         extracted = {}
@@ -181,6 +223,8 @@ class Importer(object):
         
                 new_object.data.materials.append(bpy.data.materials.get(lname[i]))
         
+        
+        # Join All like materials to one Mesh
         context = bpy.context
         scene = context.scene
         for layer in lname:
@@ -199,49 +243,6 @@ class Importer(object):
                     context.view_layer.objects.active = obs[0]
                     bpy.ops.object.join()
         
-        
-          
-        # objects = bpy.data.objects
-        # etch_targets = []
-        # etch_layers = []
-        # for obj in objects:
-        #     for lay in self.layerstack.etch_targets:
-        #         name = lay
-        #         if obj.type == 'MESH':
-        #             for slot in obj.material_slots:
-        #                 #print(str(slot.material))
-        #                 if slot.material == bpy.data.materials.get(name):
-        #                     # TODO Subtraction!!
-        #                     #print('found!')
-        #                     #obj.select_set(state=True)
-        #                     etch_targets.append(obj)
-        #     for lay in self.layerstack.etch_layers:
-        #         name = lay
-        #         if obj.type == 'MESH':
-        #             for slot in obj.material_slots:
-        #                 #print(str(slot.material))
-        #                 if slot.material == bpy.data.materials.get(name):
-        #                     # TODO Subtraction!!
-        #                     #print('found!')
-        #                     #obj.select_set(state=True)
-        #                     etch_layers.append(obj)
-        # i = 0
-        # for target in etch_targets:
-        #     for layer in etch_layers:
-        #         subtract = target.modifiers.new(type = 'BOOLEAN',name='bool' + str(i))
-        #         i = i + 1
-        #         subtract.object = layer
-        #         subtract.operation = 'DIFFERENCE'
-        #         #bpy.ops.object.modifier_apply( modifier = subtract.name)
-        #         layer.hide_set(True)
-        # for target in etch_targets:
-        #     bpy.context.view_layer.objects.active = target 
-        #     #print(target)
-        #     for mod in target.modifiers:
-        #         # print(mod.name)
-        #         bpy.ops.object.modifier_apply( modifier = mod.name )
-                     
-
 
 
 class Layer(object):
@@ -264,6 +265,7 @@ class Layer(object):
         self.etch_target = etch_target
         self.color = (color[0]/255,color[1]/255,color[2]/255,alpha)
 
+
         
 class LayerStack(object):
     '''
@@ -277,10 +279,17 @@ class LayerStack(object):
         self.layers = layers
         self.etch_targets = []
         self.etch_layers = []
+        # create the etch layer and targets
         for lay in self.layers:
             if lay.etch_target is not None:
-                self.etch_targets.append(lay.etch_target.name)
-                self.etch_layers.append(lay.name)
+                self.etch_targets.append(lay.etch_target)
+                self.etch_layers.append(lay)
+        # chcange the heights
+        for lay in self.etch_layers:
+            final_height = lay.etch_target.thickness + lay.etch_target.z
+            lay.thickness = final_height - lay.z
+            lay.etch_target.thickness = lay.z-lay.etch_target.z
+            lay.color = lay.etch_target.color
 
     def plot(self):
 

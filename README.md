@@ -45,6 +45,8 @@ These instructions help to install pip into the python that comes with blender, 
 
     `/bin/python3.7m lib/python3.7/ensurepip`
 
+    * in MacOS, ./python3.7m will run the executable instead of just the filename
+
 3. Now you have pip and can install modules by:
 
     `bin/pip3 install --target lib/python3.6   packageName`
