@@ -6,11 +6,12 @@ dependencies = [
         'numpy',
         'gdspy',
         'matplotlib>=2.2.2',
-        'phidl'
+        'phidl',
+        'progressbar2'
 ]
 setup(
     name='gdsblenderpy',
-    version='0.0.1',
+    version='0.0.2',
     description='GDS to Blender Python Translator',
     long_description=readme,
     long_description_content_type="text/markdown",
