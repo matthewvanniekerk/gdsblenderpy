@@ -38,7 +38,7 @@ import os
 import sys
 import warnings
 
-
+from progressbar import *
   
 '''
 Importer object takes a gds file as a constrcutoor
@@ -198,6 +198,10 @@ class Importer(object):
                 extrude.append(thickness)
                 lname.append(layer_name)
                 
+        widgets = ['Drawing:', Percentage(), ' ', Bar(marker='#', left = '[', right = ']' ), \
+                   ' ', ETA(), ' ', FileTransferSpeed()]
+        pbar = ProgressBar(widgets = widgets, max_value= len(vert_list) + len(lname))
+        pbar.start()
         for i in range(len(vert_list)):
             if lname[i] is not None:
                 verts_data = vert_list[i]
@@ -222,6 +226,8 @@ class Importer(object):
                 bpy.ops.object.editmode_toggle()
         
                 new_object.data.materials.append(bpy.data.materials.get(lname[i]))
+                pbar.update(i)
+                i = i + 1
         
         
         # Join All like materials to one Mesh
@@ -242,6 +248,9 @@ class Importer(object):
                         o.select_set(True)
                     context.view_layer.objects.active = obs[0]
                     bpy.ops.object.join()
+            i = i + 1
+        pbar.finish()
+        
         
 
 
