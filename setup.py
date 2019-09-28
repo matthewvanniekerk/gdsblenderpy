@@ -11,7 +11,7 @@ dependencies = [
 ]
 setup(
     name='gdsblenderpy',
-    version='0.0.2',
+    version='0.0.3',
     description='GDS to Blender Python Translator',
     long_description=readme,
     long_description_content_type="text/markdown",
