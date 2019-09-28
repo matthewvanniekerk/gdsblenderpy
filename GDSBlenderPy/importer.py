@@ -198,9 +198,11 @@ class Importer(object):
                 extrude.append(thickness)
                 lname.append(layer_name)
                 
+        
+        
         widgets = ['Drawing:', Percentage(), ' ', Bar(marker='#', left = '[', right = ']' ), \
                    ' ', ETA(), ' ', FileTransferSpeed()]
-        pbar = ProgressBar(widgets = widgets, max_value= len(vert_list) + len(lname))
+        pbar = ProgressBar(widgets = widgets, max_value= len(vert_list) + 2*len(lname))
         pbar.start()
         for i in range(len(vert_list)):
             if lname[i] is not None:
@@ -218,16 +220,10 @@ class Importer(object):
                 collection = bpy.context.collection
                 collection.objects.link(new_object)
                 bpy.context.view_layer.objects.active = new_object
-                bpy.ops.object.editmode_toggle()
 
-                bpy.ops.mesh.extrude_region_move(
-                    TRANSFORM_OT_translate={"value":(0, 0, extrude[i] )}
-                )
-                bpy.ops.object.editmode_toggle()
-        
                 new_object.data.materials.append(bpy.data.materials.get(lname[i]))
-                pbar.update(i)
-                i = i + 1
+            pbar.update(i)
+            i = i + 1    
         
         
         # Join All like materials to one Mesh
@@ -249,6 +245,26 @@ class Importer(object):
                     context.view_layer.objects.active = obs[0]
                     bpy.ops.object.join()
             i = i + 1
+        
+        extrude = []
+
+        for layer in self.layerstack.layers:
+            extrude.append((layer.name,layer.thickness))
+
+        for obj in bpy.data.objects:
+            for layer in extrude:
+                if obj.name == layer[0]:
+                    bpy.context.view_layer.objects.active = obj
+                    bpy.ops.object.editmode_toggle()
+
+                    bpy.ops.mesh.extrude_region_move(
+                        TRANSFORM_OT_translate={"value":(0, 0, layer[1] )}
+                    )
+                    bpy.ops.object.editmode_toggle()
+                    pbar.update(i)
+                    i = i + 1
+
+
         pbar.finish()
         
         
