@@ -32,19 +32,27 @@ class LayerStack(object):
     def __init__(self,name,layers):
         self.name = name
         self.layers = layers
+        self.layer_dict = {}
+        for lay in self.layers:
+            self.layer_dict[lay.name] = lay
         self.etch_targets = []
         self.etch_layers = []
         # create the etch layer and targets
         for lay in self.layers:
             if lay.etch_target is not None:
-                self.etch_targets.append(lay.etch_target)
+                self.etch_targets.append(self.layer_dict[lay.etch_target])
                 self.etch_layers.append(lay)
+                print(self.layer_dict[lay.etch_target])
         # chcange the heights
-        for lay in self.etch_layers:
-            final_height = lay.etch_target.thickness + lay.etch_target.z
-            lay.thickness = final_height - lay.z
-            lay.etch_target.thickness = lay.z-lay.etch_target.z
-            lay.color = lay.etch_target.color
+        for i in range(len(self.etch_layers)):
+            el = self.etch_layers[i]
+            et = self.etch_targets[i]
+            final_height = et.thickness + et.z
+            # el.thickness = et.thickness
+            el.thickness = et.thickness - el.z
+            et.thickness = el.z
+            # lay.thickness = lay.z-etch_layer.z
+            el.color = et.color
 
     def plot(self):
 

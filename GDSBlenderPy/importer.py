@@ -115,6 +115,7 @@ class Importer(object):
         etch_layers = []
         etch_targets = []
         layer_target = []
+
         for elay in self.layerstack.etch_layers:
             etch_layers.append(self.gds.get_polygons(by_spec = True, depth = None)[(elay.layer,elay.datatype)])
             layer_target.append((elay.layer,elay.datatype))
@@ -123,21 +124,28 @@ class Importer(object):
             
         # Do this with gdspy! dont go back to Device.
 
+
         etch_layers,etch_targets
         new_polygons = []
         for i in range(len(etch_targets)):
-            p = gdspy.fast_boolean(operand1 = etch_targets[i], \
-                                operand2 = etch_layers[i], \
-                                operation = 'not', \
-                                precision = 1e-9, \
-                                max_points = 4000,\
-                                layer = layer_target[i][0],\
-                                datatype = layer_target[i][1] )
+            p = gdspy.fast_boolean(operand1 = etch_targets[i],
+                                   operand2 = etch_layers[i],
+                                   operation = 'not',
+                                   precision = 1e-9,
+                                   max_points = 4000,
+                                   layer = 702,
+                                   datatype = 727 )
             new_polygons.append(p)
         self._remove_etch_layers()
 
+
+
         for i in range(len(new_polygons)):
             self.gds.add_polygon(new_polygons[i],layer = layer_target[i])
+
+        # self.gds.write_gds(filename='test.gds')
+
+
 
     def _extract_vertices(self):
 
@@ -220,12 +228,19 @@ class Importer(object):
                 collection = bpy.context.collection
                 collection.objects.link(new_object)
                 bpy.context.view_layer.objects.active = new_object
+                '''
+                bpy.ops.object.editmode_toggle()
 
+                bpy.ops.mesh.extrude_region_move(
+                    TRANSFORM_OT_translate={"value":(0, 0, extrude[i] )}
+                )
+                bpy.ops.object.editmode_toggle()
+                '''
                 new_object.data.materials.append(bpy.data.materials.get(lname[i]))
             pbar.update(i)
             i = i + 1    
-        
-        
+
+
         # Join All like materials to one Mesh
         context = bpy.context
         scene = context.scene
@@ -245,7 +260,7 @@ class Importer(object):
                     context.view_layer.objects.active = obs[0]
                     bpy.ops.object.join()
             i = i + 1
-        
+
         extrude = []
 
         for layer in self.layerstack.layers:
